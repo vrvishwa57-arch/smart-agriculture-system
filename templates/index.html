@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Agriculture AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🌱 Smart Agriculture AI</h1>
+
+    <!-- Prediction Card -->
+    <div class="card">
+        <h2>Crop Prediction</h2>
+
+        <form action="/predict" method="post">
+
+            <input class="full" name="city" placeholder="Enter City (Madurai)" required>
+
+            <div class="grid">
+                <input name="N" placeholder="Nitrogen" required>
+                <input name="P" placeholder="Phosphorus" required>
+                <input name="K" placeholder="Potassium" required>
+                <input name="ph" placeholder="pH" required>
+                <input name="rainfall" placeholder="Rainfall" required>
+            </div>
+
+            <button type="submit">🌾 Predict Crop</button>
+        </form>
+    </div>
+
+    <!-- Result -->
+    {% if result %}
+    <div class="result-card">
+        <h2>🌾 {{ result }}</h2>
+        <p>💰 Profit: ₹{{ profit }}</p>
+        <p>🌡 Temperature: {{ temp }} °C</p>
+        <p>💧 Humidity: {{ hum }} %</p>
+    </div>
+    {% endif %}
+
+    <!-- Chatbot -->
+    <div class="chatbot">
+        <h2>🤖 AI Assistant</h2>
+
+        <div id="chatbox"></div>
+
+        <div class="chat-input">
+            <input id="msg" placeholder="Ask something...">
+            <button onclick="sendMsg()">Send</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function sendMsg() {
+    let msg = document.getElementById("msg").value;
+    if(!msg) return;
+
+    let chatbox = document.getElementById("chatbox");
+
+    chatbox.innerHTML += "<div class='user'>" + msg + "</div>";
+
+    fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: "message=" + msg
+    })
+    .then(res => res.json())
+    .then(data => {
+        chatbox.innerHTML += "<div class='bot'>" + data.response + "</div>";
+        chatbox.scrollTop = chatbox.scrollHeight;
+    });
+
+    document.getElementById("msg").value = "";
+}
+</script>
+
+</body>
+</html>
